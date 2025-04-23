@@ -7,12 +7,17 @@
     "start": "node index.js"
   },
   "dependencies": {
+<<<<<<< HEAD
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "crypto": "^1.0.1",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+=======
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+>>>>>>> 53ae4994868c4e9a9796446fbb7816b6203b8a3e
     "mongoose": "^8.13.2"
   }
 }
