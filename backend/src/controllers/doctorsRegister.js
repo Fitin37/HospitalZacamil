@@ -7,14 +7,14 @@ const registerDoctors = {};
 
 registerDoctors.register = async (req, res) => {
     const {
-        name,
+        Name,
         specialty,
         email,
         password
     } = req.body;
 
     if(
-        !name ||
+        !Name ||
         !specialty||
         !email||
         !password
@@ -31,7 +31,7 @@ registerDoctors.register = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, 10);
 
         const newDoc = new doctorsModel({
-            name,
+            Name,
             specialty,
             email,
             password: passwordHash

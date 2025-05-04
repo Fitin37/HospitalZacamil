@@ -1,43 +1,44 @@
-import doctorsModel from "../models/doctors.js";
+const loginController={};
+
 import patientsModel from "../models/patients.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import doctorsModel from "../models/doctors.js";
+import bcrypt from "bcryptjs"; //Encriptar
+import jwt from "jsonwebtoken"; //generar Token
 import { config } from "../config.js";
 
-const loginController = {};
-
 loginController.Login = async (req, res) => {
-    const { Name, email, password } = req.body;
+    const { email, password } = req.body;
 
     try {
         let userFound = null;
         let userType = null;
 
-        // Primero intenta encontrar al paciente
+        // Intentar encontrar al paciente primero
         if (email) {
             userFound = await patientsModel.findOne({ email });
             userType = "Paciente";
+
+            // Si es paciente pero no está verificado, rechazar login
+            if (userFound && !userFound.isVerified) {
+                return res.status(403).json({ message: "El correo no ha sido verificado" });
+            }
         }
 
-        // Si no se encontró un paciente, intenta encontrar al doctor
-        if (!userFound && Name) {
-            userFound = await doctorsModel.findOne({ Name });
+        // Si no es paciente, intenta con doctor
+        if (!userFound && email) {
+            userFound = await doctorsModel.findOne({ email });
             userType = "Doctor";
         }
 
-        // Si no se encontró ningún usuario
         if (!userFound) {
-            console.log("No se encontró ningún usuario");
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
 
-        // Verifica la contraseña
         const isMatch = await bcrypt.compare(password, userFound.password);
         if (!isMatch) {
             return res.status(401).json({ message: "Contraseña incorrecta" });
         }
 
-        // Genera el token
         jwt.sign(
             {
                 id: userFound._id,
@@ -49,7 +50,6 @@ loginController.Login = async (req, res) => {
             },
             (err, token) => {
                 if (err) {
-                    console.error(err);
                     return res.status(500).json({ message: "Error al generar el token" });
                 }
 
